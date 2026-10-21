@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teste de nível de inglês · Fluency Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F8FB;--surface:#FFFFFF;--ink:#1B2A4A;--muted:#5B6B86;--line:#DCE3EE;--accent:#0F8B8D;--accent-ink:#FFFFFF;--warm:#E9A23B;--ok:#1E8E5A;--bad:#C2410C;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101826;--surface:#182234;--ink:#E8EEF8;--muted:#9AA9C2;--line:#2B3850;--accent:#3CC4C6;--accent-ink:#0B1A24;--warm:#F2B552;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101826;--surface:#182234;--ink:#E8EEF8;--muted:#9AA9C2;--line:#2B3850;--accent:#3CC4C6;--accent-ink:#0B1A24;--warm:#F2B552;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:640px;margin:0 auto;padding:28px 20px 56px}
+h1,h2,.big{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;letter-spacing:-.02em;margin:0}
+h1{font-size:clamp(2rem,7vw,2.8rem);line-height:1.05;font-weight:800}
+h2{font-size:1.5rem;line-height:1.25;font-weight:700}
+p{margin:.6em 0}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+label{display:block;font-weight:600;margin:20px 0 6px}
+input[type=text]{width:100%;font:inherit;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:12px 18px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.bar{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.q{font-size:1.3rem;line-height:1.4;font-weight:600;margin:18px 0}
+.opt{display:block;width:100%;text-align:left;margin-bottom:10px;padding:14px 16px}
+.opt[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+.big{font-size:5.5rem;line-height:1;font-weight:800;color:var(--accent)}
+.gauge{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:22px 0 8px}
+.gauge div{height:46px;border-radius:6px;background:var(--line);display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;font-weight:700;font-size:.85rem;color:var(--muted)}
+.gauge div.on{background:var(--accent);color:var(--accent-ink)}
+.gauge div.cur{background:var(--warm);color:#1B2A4A;height:62px}
+.gauge{align-items:end}
+.brk{display:grid;grid-template-columns:2.2rem 1fr 3rem;gap:10px;align-items:center;margin:8px 0;font-size:.95rem}
+.brk .bar{margin:0}
+a.btn{font:inherit;font-weight:600;border-radius:10px;padding:12px 18px;text-decoration:none;display:inline-block;background:var(--accent);border:1px solid var(--accent);color:var(--accent-ink)}
+a.btn:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.hide{display:none}
+@media print{.row,#themeBtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<main>
+<section id="start">
+  <p style="margin:0 0 10px;font-weight:600;color:var(--accent)">Fluency Academy</p>
+  <h1>Descubra o seu nível de inglês</h1>
+  <p class="muted">12 perguntas de múltipla escolha, cerca de 5 minutos. O resultado segue a escala internacional CEFR, de A1 a C2.</p>
+  <div class="card" style="margin-top:22px">
+    <label for="nome" style="margin-top:0">Nome do estudante</label>
+    <input id="nome" type="text" autocomplete="name" placeholder="Ex.: Ana Souza">
+    <p class="muted" style="font-size:.9rem">Responda sem consultar nada. Se não souber, escolha a opção que parecer mais natural.</p>
+    <div class="row"><button class="primary" id="go">Começar o teste</button></div>
+  </div>
+</section>
+
+<section id="quiz" class="hide" aria-live="polite">
+  <div class="bar"><i id="prog"></i></div>
+  <div class="muted" id="count" style="font-size:.9rem"></div>
+  <div class="q" id="qtext"></div>
+  <div id="opts"></div>
+  <div class="row"><button class="primary" id="next" disabled>Próxima</button></div>
+</section>
+
+<section id="result" class="hide">
+  <p class="muted" id="who" style="margin:0"></p>
+  <div class="big" id="lvl"></div>
+  <h2 id="lname"></h2>
+  <p id="ldesc"></p>
+  <div class="gauge" id="gauge" aria-hidden="true"></div>
+  <div class="card" style="margin-top:22px">
+    <h2 style="font-size:1.1rem;margin-bottom:8px">Acertos por nível</h2>
+    <div id="brk"></div>
+    <p class="muted" id="total" style="margin-bottom:0"></p>
+  </div>
+  <p class="muted" style="font-size:.9rem">Este teste é uma estimativa rápida. Para uma avaliação completa, um professor deve avaliar também a fala e a escrita.</p>
+  <div class="row">
+    <a class="btn" id="wa" target="_blank" rel="noopener">Enviar resultado no WhatsApp</a>
+    <button id="copy">Copiar resultado</button>
+    <button id="print">Imprimir ou salvar em PDF</button>
+    <button id="again">Refazer o teste</button>
+  </div>
+</section>
+</main>
+<script>
+var Q=[
+["She ___ a teacher.",["am","is","are"],1,"A1"],
+["I ___ coffee every morning.",["drink","drinks","drinking"],0,"A1"],
+["Yesterday we ___ to the cinema.",["go","goed","went"],2,"A2"],
+["He is taller ___ his brother.",["than","that","as"],0,"A2"],
+["If it rains tomorrow, we ___ at home.",["stay","will stay","would stay"],1,"B1"],
+["I have lived here ___ 2019.",["for","since","from"],1,"B1"],
+["I wish I ___ more time to travel.",["have","had","would have"],1,"B2"],
+["By next June, she ___ her degree.",["will finish","will have finished","finishes"],1,"B2"],
+["Hardly had we arrived ___ it started to rain.",["than","when","that"],1,"C1"],
+["Had I known about the delay, I ___ earlier.",["would leave","would have left","had left"],1,"C1"],
+["The minister’s remarks were deliberately ___, allowing several interpretations.",["equivocal","equitable","eloquent"],0,"C2"],
+["Not until the data was reviewed ___ the error.",["they noticed","did they notice","they did notice"],1,"C2"]
+];
+var PHONE="258853689713"; /* WhatsApp da escola, com indicativo do país, só dígitos */
+var L=["A1","A2","B1","B2","C1","C2"];
+var INFO={
+"Pré-A1":["Iniciante absoluto","Você está começando agora. Foque em cumprimentos, números, verbos básicos e frases curtas do dia a dia."],
+"A1":["Iniciante","Você entende e usa expressões simples e frases muito básicas sobre si mesmo e sobre o cotidiano."],
+"A2":["Básico","Você se comunica em situações rotineiras e simples, como compras, família e trabalho, e fala do passado de forma básica."],
+"B1":["Intermediário","Você se vira em viagens, conta experiências e dá opiniões simples. É o ponto em que a conversa começa a fluir."],
+"B2":["Intermediário avançado","Você conversa com naturalidade, entende textos mais complexos e defende ideias com clareza."],
+"C1":["Avançado","Você usa o idioma com flexibilidade e precisão no trabalho, nos estudos e em temas abstratos."],
+"C2":["Proficiente","Você domina o idioma com sutileza e precisão, em nível próximo ao de um falante nativo instruído."]};
+var $=function(i){return document.getElementById(i)};
+var items,idx,ans,pick,nome;
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function show(id){["start","quiz","result"].forEach(function(s){$(s).classList.toggle("hide",s!==id)});window.scrollTo(0,0)}
+function start(){
+  nome=$("nome").value.trim();
+  items=Q.map(function(q){var o=q[1].map(function(t,i){return{t:t,ok:i===q[2]}});return{q:q[0],o:shuffle(o),l:q[3]}});
+  idx=0;ans=[];show("quiz");render();
+}
+function render(){
+  var it=items[idx];pick=null;
+  $("count").textContent="Pergunta "+(idx+1)+" de "+items.length;
+  $("prog").style.width=(idx/items.length*100)+"%";
+  $("qtext").textContent=it.q;
+  $("next").disabled=true;
+  $("next").textContent=idx===items.length-1?"Ver resultado":"Próxima";
+  var box=$("opts");box.innerHTML="";
+  it.o.forEach(function(o,i){
+    var b=document.createElement("button");b.className="opt";b.type="button";b.setAttribute("aria-pressed","false");b.textContent=o.t;
+    b.onclick=function(){
+      pick=i;[].forEach.call(box.children,function(c,k){c.setAttribute("aria-pressed",k===i?"true":"false")});
+      $("next").disabled=false;
+    };
+    box.appendChild(b);
+  });
+}
+function next(){
+  ans.push(items[idx].o[pick].ok);
+  idx++;
+  if(idx<items.length)render();else finish();
+}
+function finish(){
+  var tot={},ok={},good=0;
+  L.forEach(function(l){tot[l]=0;ok[l]=0});
+  items.forEach(function(it,i){tot[it.l]++;if(ans[i]){ok[it.l]++;good++}});
+  var cuts=[3,5,7,9,11,12],level="Pré-A1";
+  for(var i=0;i<cuts.length;i++){if(good>=cuts[i])level=L[i]}
+  var info=INFO[level];
+  $("who").textContent=(nome?nome+" · ":"")+new Date().toLocaleDateString("pt-BR");
+  $("lvl").textContent=level;
+  $("lname").textContent=info[0];
+  $("ldesc").textContent=info[1];
+  var g=$("gauge");g.innerHTML="";
+  var li=L.indexOf(level);
+  L.forEach(function(l,i){var d=document.createElement("div");d.textContent=l;if(i<li)d.className="on";if(i===li)d.className="cur";g.appendChild(d)});
+  var b=$("brk");b.innerHTML="";
+  L.forEach(function(l){
+    var r=document.createElement("div");r.className="brk";
+    r.innerHTML='<strong>'+l+'</strong><div class="bar"><i style="width:'+(ok[l]/tot[l]*100)+'%"></i></div><span>'+ok[l]+'/'+tot[l]+'</span>';
+    b.appendChild(r);
+  });
+  $("total").textContent="Total: "+good+" de "+items.length+" acertos.";
+  window.__txt="Olá! Fiz o teste de nível de inglês da Fluency Academy. "+(nome?"Nome: "+nome+". ":"")+"Resultado: "+level+" ("+info[0]+"), "+good+"/"+items.length+" acertos.";
+  $("wa").href="https://wa.me/"+PHONE+"?text="+encodeURIComponent(window.__txt);
+  show("result");
+}
+$("go").onclick=start;
+$("next").onclick=next;
+$("again").onclick=function(){show("start")};
+$("print").onclick=function(){window.print()};
+$("copy").onclick=function(){
+  var btn=$("copy");
+  try{navigator.clipboard.writeText(window.__txt).then(function(){btn.textContent="Copiado"},function(){btn.textContent="Não foi possível copiar"})}
+  catch(e){btn.textContent="Não foi possível copiar"}
+};
+</script>
+</body>
+</html>
